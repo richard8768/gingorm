@@ -22,7 +22,7 @@ database:
 redis:
   host: 192.168.92.133
   port: 6379
-  password: GeGFe5MhlaHdB6O9
+  password: GeGFe5MshlaHdB6O9
   data_base: 1
 
 log:
@@ -39,5 +39,11 @@ jwt:
     secret: 5GTyQ6ZNTF7wX2pF7xS94Eyjk9wP6Sxy
     ttl: 7200000
 
-
+alioss:
+  region_id: cn-hangzhou
+  endpoint:
+  access_key_id: your key id
+  access_key_secret: your key secret
+  security_token:
+  bucket_name: your bucket name
 
