@@ -1,0 +1,43 @@
+server:
+  name: testApp
+  port: 8080
+  # debug | release | test 运行环境
+  level: debug
+  local_upload_path: ./storage/public/upload/
+
+database:
+  driver: mysql
+  host: 192.168.92.133
+  port: 35136
+  username: gingorm
+  password: gingorm
+  db_name: gingorm
+  max_open_conns: 100
+  max_idle_conns: 20
+  max_life_time: 3600
+  log_level: 4
+  prefix: ps_
+  config: charset=utf8mb4&parseTime=True&loc=Local
+
+redis:
+  host: 192.168.92.133
+  port: 6379
+  password: GeGFe5MhlaHdB6O9
+  data_base: 1
+
+log:
+  level: debug
+  filepath: ./storage/log/
+
+
+jwt:
+  userlist: ["admin","user"]
+  admin:
+    secret: 5GTyQ6ZNTF7wX2pF7xS94Eyjk9wP6Sxy
+    ttl: 7200000
+  user:
+    secret: 5GTyQ6ZNTF7wX2pF7xS94Eyjk9wP6Sxy
+    ttl: 7200000
+
+
+
