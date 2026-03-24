@@ -96,16 +96,21 @@ func GinRecovery(logger *zap.Logger, stack bool) gin.HandlerFunc {
 					return
 				}
 
+				strHttpRequest := string(httpRequest)
+				strHttpRequest = strings.ReplaceAll(strHttpRequest, "\r\n", "\n")
+				strHttpRequest = strings.ReplaceAll(strHttpRequest, "\n\n", "\n")
 				if stack {
+					strStack := string(debug.Stack())
+					strStack = strings.ReplaceAll(strStack, "\t", "    ")
 					logger.Error("[Recovery from panic]",
 						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-						zap.String("stack", string(debug.Stack())),
+						zap.String("request", strHttpRequest),
+						zap.String("stack", strStack),
 					)
 				} else {
 					logger.Error("[Recovery from panic]",
 						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
+						zap.String("request", strHttpRequest),
 					)
 				}
 				c.AbortWithStatus(http.StatusInternalServerError)
