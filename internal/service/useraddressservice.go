@@ -39,7 +39,7 @@ func (s *UserAddressService) AddressList(context *gin.Context, req *dto.UserAddr
 	var pageSize = req.PageSize
 	var keyword = req.Keyword
 	if page <= 0 {
-		page = 0
+		page = 1
 	}
 	page--
 	if pageSize <= 0 {
@@ -63,9 +63,12 @@ func (s *UserAddressService) AddressList(context *gin.Context, req *dto.UserAddr
 	total := result.RowsAffected
 
 	var userAddressDtoList []dto.UserAddressResponse
-	err = copier.Copy(&userAddressDtoList, &userAddressList)
-	if err != nil {
-		return nil, err
+	if len(userAddressList) > 0 {
+		for _, singleUserAddress := range userAddressList {
+			var typeSingleUserAddress dto.UserAddressResponse
+			_ = copier.Copy(&typeSingleUserAddress, singleUserAddress)
+			userAddressDtoList = append(userAddressDtoList, typeSingleUserAddress)
+		}
 	}
 
 	response := &dto.UserAddressListResponse{

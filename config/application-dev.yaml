@@ -8,7 +8,7 @@ server:
 database:
   driver: mysql
   host: 192.168.92.133
-  port: 35136
+  port: 5127
   username: gingorm
   password: gingorm
   db_name: gingorm
