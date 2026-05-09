@@ -173,6 +173,18 @@ func (s *UserAddressService) DeleteAddress(context *gin.Context, req *dto.UserAd
 		return nil, result.Error
 	}
 
+	////if u want restore the data use the follow code
+	//result = s.db.Unscoped().Model(&model.MemberAddress{}).Where("id = ?", userAddressId).Where("member_id = ?", userId).Update("deleted_at", 0)
+	//if result.Error != nil {
+	//	return nil, result.Error
+	//}
+
+	////if u want force delete the data use the follow code
+	//result = s.db.Unscoped().Where("id = ?", userAddressId).Where("member_id = ?", userId).Delete(&model.MemberAddress{})
+	//if result.Error != nil {
+	//	return nil, result.Error
+	//}
+
 	response := &dto.UserAddressDeleteResponse{
 		ID:           uint(userAddressModel.ID),
 		DeleteStatus: result.RowsAffected,
