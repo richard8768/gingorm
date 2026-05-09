@@ -4,24 +4,24 @@
  Source Server         : 192.168.92.133_8.0.42
  Source Server Type    : MySQL
  Source Server Version : 80042
- Source Host           : 192.168.92.133:35136
+ Source Host           : 192.168.92.133:5127
  Source Schema         : gingorm
 
  Target Server Type    : MySQL
  Target Server Version : 80042
  File Encoding         : 65001
 
- Date: 23/03/2026 12:08:04
+ Date: 09/05/2026 11:56:31
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for ps_member
+-- Table structure for member
 -- ----------------------------
-DROP TABLE IF EXISTS `ps_member`;
-CREATE TABLE `ps_member`  (
+DROP TABLE IF EXISTS `member`;
+CREATE TABLE `member`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `member_name` varchar(35) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '用户名字',
   `member_pass` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '密码',
@@ -49,15 +49,15 @@ CREATE TABLE `ps_member`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
--- Records of ps_member
+-- Records of member
 -- ----------------------------
-INSERT INTO `ps_member` VALUES (1, 'user001', '$2a$10$lKRIFngc7ZVBuQRsGJ1b3.9r1EZV8AMFn9uK79d3KW50uLwneMQeu', '13800138000', 'user001@user001.com', 0, 1773824205, '', 1773912874, '127.0.0.1', 0, '', 1, '', '', 1, 1773912874, 1, '');
+INSERT INTO `member` VALUES (1, 'user001', '$2a$10$lKRIFngc7ZVBuQRsGJ1b3.9r1EZV8AMFn9uK79d3KW50uLwneMQeu', '13800138000', 'user001@user001.com', 0, 1773824205, '', 1778224516, '127.0.0.1', 0, '', 1, '', '', 1, 1778224516, 1, '');
 
 -- ----------------------------
--- Table structure for ps_member_account
+-- Table structure for member_account
 -- ----------------------------
-DROP TABLE IF EXISTS `ps_member_account`;
-CREATE TABLE `ps_member_account`  (
+DROP TABLE IF EXISTS `member_account`;
+CREATE TABLE `member_account`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `member_id` int NOT NULL DEFAULT 0,
   `amount` decimal(10, 3) NOT NULL,
@@ -68,15 +68,15 @@ CREATE TABLE `ps_member_account`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
--- Records of ps_member_account
+-- Records of member_account
 -- ----------------------------
-INSERT INTO `ps_member_account` VALUES (1, 1, 0.000, 1, 0, '');
+INSERT INTO `member_account` VALUES (1, 1, 0.000, 1, 0, '');
 
 -- ----------------------------
--- Table structure for ps_member_address
+-- Table structure for member_address
 -- ----------------------------
-DROP TABLE IF EXISTS `ps_member_address`;
-CREATE TABLE `ps_member_address`  (
+DROP TABLE IF EXISTS `member_address`;
+CREATE TABLE `member_address`  (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `member_id` int UNSIGNED NOT NULL DEFAULT 0 COMMENT ' 用户id唯一标识',
   `address` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '收货地址',
@@ -93,18 +93,18 @@ CREATE TABLE `ps_member_address`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户常用地址表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
--- Records of ps_member_address
+-- Records of member_address
 -- ----------------------------
-INSERT INTO `ps_member_address` VALUES (1, 1, 'addressaddressaddress11112', '13800138003', 0, 1773909503, 'consignee_name4', '610005', 123546, 1477, 2588, 0);
-INSERT INTO `ps_member_address` VALUES (2, 1, 'addressaddressaddress1', '13800138000', 0, 1773909594, 'consignee_name', '610000', 12354, 147, 258, 1);
-INSERT INTO `ps_member_address` VALUES (3, 1, 'addressaddressaddress1', '13800138000', 0, 1773909698, 'consignee_name', '610000', 12354, 147, 258, 0);
-INSERT INTO `ps_member_address` VALUES (4, 1, 'addressaddressaddress1', '13800138000', 1, 1773909913, 'consignee_name', '610000', 12354, 147, 258, 0);
+INSERT INTO `member_address` VALUES (1, 1, 'addressaddressaddress11112', '13800138003', 0, 1773909503, 'consignee_name4', '610005', 123546, 1477, 2588, 0);
+INSERT INTO `member_address` VALUES (2, 1, 'addressaddressaddress1', '13800138000', 0, 1773909594, 'consignee_name', '610000', 12354, 147, 258, 1);
+INSERT INTO `member_address` VALUES (3, 1, 'addressaddressaddress1', '13800138000', 0, 1773909698, 'consignee_name', '610000', 12354, 147, 258, 0);
+INSERT INTO `member_address` VALUES (4, 1, 'addressaddressaddress1', '13800138000', 1, 1773909913, 'consignee_name', '610000', 12354, 147, 258, 0);
 
 -- ----------------------------
--- Table structure for ps_member_profile
+-- Table structure for member_profile
 -- ----------------------------
-DROP TABLE IF EXISTS `ps_member_profile`;
-CREATE TABLE `ps_member_profile`  (
+DROP TABLE IF EXISTS `member_profile`;
+CREATE TABLE `member_profile`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `member_id` int UNSIGNED NOT NULL DEFAULT 0,
   `account_balance` decimal(10, 3) NULL DEFAULT 0.000,
@@ -129,8 +129,8 @@ CREATE TABLE `ps_member_profile`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
--- Records of ps_member_profile
+-- Records of member_profile
 -- ----------------------------
-INSERT INTO `ps_member_profile` VALUES (1, 1, 0.000, 0.000, 0.000, 0.000, 0, '', '', 0, '', 0, 0, '', '', '', 0, 1, 0, 0);
+INSERT INTO `member_profile` VALUES (1, 1, 0.000, 0.000, 0.000, 0.000, 0, '', '', 0, '', 0, 0, '', '', '', 0, 1, 0, 0);
 
 SET FOREIGN_KEY_CHECKS = 1;
