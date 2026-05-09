@@ -22,6 +22,7 @@ type MemberAddress struct {
 	CityID        int64                 `gorm:"column:city_id;type:int;not null;comment:城市名称" json:"city_id"`                                    // 城市名称
 	AreaID        int64                 `gorm:"column:area_id;type:int;not null;comment:区县名称" json:"area_id"`                                    // 区县名称
 	DeletedAt     soft_delete.DeletedAt `gorm:"column:deleted_at;type:int;not null;softDelete:flag" json:"deleted_at"`
+	UpdatedAt     int64                 `gorm:"column:updated_at;type:int;type:unsigned;not null;autoUpdateTime" json:"updated_at"`
 }
 
 // TableName MemberAddress's table name

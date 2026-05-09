@@ -11,7 +11,7 @@
  Target Server Version : 80042
  File Encoding         : 65001
 
- Date: 09/05/2026 11:56:31
+ Date: 09/05/2026 12:09:59
 */
 
 SET NAMES utf8mb4;
@@ -89,16 +89,17 @@ CREATE TABLE `member_address`  (
   `city_id` int NOT NULL DEFAULT 0 COMMENT '城市名称',
   `area_id` int NOT NULL DEFAULT 0 COMMENT '区县名称',
   `deleted_at` int NOT NULL DEFAULT 0,
+  `updated_at` int NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户常用地址表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of member_address
 -- ----------------------------
-INSERT INTO `member_address` VALUES (1, 1, 'addressaddressaddress11112', '13800138003', 0, 1773909503, 'consignee_name4', '610005', 123546, 1477, 2588, 0);
-INSERT INTO `member_address` VALUES (2, 1, 'addressaddressaddress1', '13800138000', 0, 1773909594, 'consignee_name', '610000', 12354, 147, 258, 1);
-INSERT INTO `member_address` VALUES (3, 1, 'addressaddressaddress1', '13800138000', 0, 1773909698, 'consignee_name', '610000', 12354, 147, 258, 0);
-INSERT INTO `member_address` VALUES (4, 1, 'addressaddressaddress1', '13800138000', 1, 1773909913, 'consignee_name', '610000', 12354, 147, 258, 0);
+INSERT INTO `member_address` VALUES (1, 1, 'addressaddressaddress11112', '13800138003', 0, 1773909503, 'consignee_name4', '610005', 123546, 1477, 2588, 0, 0);
+INSERT INTO `member_address` VALUES (2, 1, 'addressaddressaddress1', '13800138000', 0, 1773909594, 'consignee_name', '610000', 12354, 147, 258, 1, 0);
+INSERT INTO `member_address` VALUES (3, 1, 'addressaddressaddress1', '13800138000', 0, 1773909698, 'consignee_name', '610000', 12354, 147, 258, 0, 0);
+INSERT INTO `member_address` VALUES (4, 1, 'addressaddressaddress1', '13800138000', 1, 1773909913, 'consignee_name', '610000', 12354, 147, 258, 0, 0);
 
 -- ----------------------------
 -- Table structure for member_profile

@@ -40,6 +40,7 @@ func newMemberAddress(db *gorm.DB, opts ...gen.DOOption) memberAddress {
 	_memberAddress.CityID = field.NewInt64(tableName, "city_id")
 	_memberAddress.AreaID = field.NewInt64(tableName, "area_id")
 	_memberAddress.DeletedAt = field.NewField(tableName, "deleted_at")
+	_memberAddress.UpdatedAt = field.NewInt64(tableName, "updated_at")
 
 	_memberAddress.fillFieldMap()
 
@@ -63,6 +64,7 @@ type memberAddress struct {
 	CityID        field.Int64  // 城市名称
 	AreaID        field.Int64  // 区县名称
 	DeletedAt     field.Field
+	UpdatedAt     field.Int64
 
 	fieldMap map[string]field.Expr
 }
@@ -91,6 +93,7 @@ func (m *memberAddress) updateTableName(table string) *memberAddress {
 	m.CityID = field.NewInt64(table, "city_id")
 	m.AreaID = field.NewInt64(table, "area_id")
 	m.DeletedAt = field.NewField(table, "deleted_at")
+	m.UpdatedAt = field.NewInt64(table, "updated_at")
 
 	m.fillFieldMap()
 
@@ -107,7 +110,7 @@ func (m *memberAddress) GetFieldByName(fieldName string) (field.OrderExpr, bool)
 }
 
 func (m *memberAddress) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 12)
+	m.fieldMap = make(map[string]field.Expr, 13)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["member_id"] = m.MemberID
 	m.fieldMap["address"] = m.Address
@@ -120,6 +123,7 @@ func (m *memberAddress) fillFieldMap() {
 	m.fieldMap["city_id"] = m.CityID
 	m.fieldMap["area_id"] = m.AreaID
 	m.fieldMap["deleted_at"] = m.DeletedAt
+	m.fieldMap["updated_at"] = m.UpdatedAt
 }
 
 func (m memberAddress) clone(db *gorm.DB) memberAddress {
