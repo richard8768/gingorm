@@ -16,7 +16,6 @@ database:
   max_idle_conns: 20
   max_life_time: 3600
   log_level: 4
-  prefix: ps_
   config: charset=utf8mb4&parseTime=True&loc=Local
 
 redis:

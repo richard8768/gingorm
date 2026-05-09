@@ -4,9 +4,9 @@
 
 package model
 
-const TableNameMember = "ps_member"
+const TableNameMember = "member"
 
-// Member mapped from table <ps_member>
+// Member mapped from table <member>
 type Member struct {
 	ID           uint64 `gorm:"column:id;type:int unsigned;primaryKey;autoIncrement:true" json:"id"`
 	MemberName   string `gorm:"column:member_name;type:varchar(35);not null;index:member_name,priority:1;comment:用户名字" json:"member_name"` // 用户名字

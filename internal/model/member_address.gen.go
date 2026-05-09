@@ -6,7 +6,7 @@ package model
 
 import "gorm.io/plugin/soft_delete"
 
-const TableNameMemberAddress = "ps_member_address"
+const TableNameMemberAddress = "member_address"
 
 // MemberAddress 用户常用地址表
 type MemberAddress struct {

@@ -31,7 +31,6 @@ func SetupDB(cfg *DataBase) (err error) {
 		"Local")
 	//Dsn := "root:eyFMV6kub9TVe7Ld@tcp(127.0.0.1:3316)/plastics?charset=utf8&parseTime=True&loc=Local"
 	//fmt.Println(Dsn)
-	//fmt.Println(cfg.Prefix)
 
 	gormConfig := &gorm.Config{
 		// 命名策略

@@ -6,9 +6,9 @@ package model
 
 import "github.com/shopspring/decimal"
 
-const TableNameMemberProfile = "ps_member_profile"
+const TableNameMemberProfile = "member_profile"
 
-// MemberProfile mapped from table <ps_member_profile>
+// MemberProfile mapped from table <member_profile>
 type MemberProfile struct {
 	ID                  uint64          `gorm:"column:id;type:int unsigned;primaryKey;autoIncrement:true" json:"id"`
 	MemberID            uint64          `gorm:"column:member_id;type:int unsigned;not null" json:"member_id"`
