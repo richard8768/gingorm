@@ -198,8 +198,7 @@ func generate(sqlConf string, tables ...string) {
 
 		tag.Set("column", "deleted_at")
 
-		//默认使用unix时间戳作为删除标志
-		//tag.Set("softDelete:flag") // 使用 1 / 0 作为 删除标志
+		//默认使用unix时间戳作为删除值
 		//tag.Set("softDelete:milli") //使用毫秒 milli作为值
 		//tag.Set("softDelete:nano")  //使用纳秒 nano作为值
 
