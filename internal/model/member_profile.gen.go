@@ -29,7 +29,6 @@ type MemberProfile struct {
 	AreaID              uint64          `gorm:"column:area_id;type:int unsigned" json:"area_id"`
 	Age                 int64           `gorm:"column:age;type:int;default:1" json:"age"`
 	Scores              int64           `gorm:"column:scores;type:int" json:"scores"`
-	IsRemindCheckIn     int64           `gorm:"column:is_remind_check_in;type:tinyint" json:"is_remind_check_in"`
 }
 
 // TableName MemberProfile's table name

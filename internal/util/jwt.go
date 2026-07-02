@@ -1,6 +1,7 @@
 package util
 
 import (
+	"errors"
 	"gin_demo/internal/config"
 	"gin_demo/internal/model"
 	"strconv"
@@ -15,7 +16,10 @@ type UserClaim struct {
 	jwt.RegisteredClaims
 }
 
-func GenToken(user model.Member, userType string) (string, error) {
+func GenToken(user model.Member, userType string, tokenType string) (string, error) {
+	if tokenType != "login" && tokenType != "logout" {
+		return "", errors.New("invalid token type")
+	}
 	cfg, err := config.GetJwtCfg(userType)
 	if err != nil {
 		return "", err
@@ -23,11 +27,20 @@ func GenToken(user model.Member, userType string) (string, error) {
 	seconds := cfg.TTL
 	jwtKey := cfg.Secret
 	secretKey := []byte(jwtKey)
+
+	var expiresAt *jwt.NumericDate
+	if tokenType == "login" {
+		expiresAt = jwt.NewNumericDate(carbon.Now().AddSeconds(seconds).ToStdTime())
+	} else {
+
+		expiresAt = jwt.NewNumericDate(carbon.Now().SubSeconds(seconds).ToStdTime())
+
+	}
 	claims := UserClaim{
 		UserId:   strconv.FormatUint(user.ID, 10),
 		UserName: user.MemberName,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(carbon.Now().AddSeconds(seconds).ToStdTime()),
+			ExpiresAt: expiresAt,
 			IssuedAt:  jwt.NewNumericDate(carbon.Now().ToStdTime()),
 			NotBefore: jwt.NewNumericDate(carbon.Now().ToStdTime()),
 		},

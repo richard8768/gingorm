@@ -3,13 +3,18 @@ package service
 import (
 	"errors"
 	"fmt"
+	"gin_demo/internal/config"
 	"gin_demo/internal/dto"
 	"gin_demo/internal/model"
 	"gin_demo/internal/util"
+	"mime/multipart"
+	"os"
+	"slices"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
 	"github.com/spf13/cast"
+	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 )
 
@@ -21,6 +26,8 @@ type IUserAddressService interface {
 	UpdateAddress(context *gin.Context, req *dto.UserAddressUpdateRequest) (*dto.UserAddressResponse, error)
 	DeleteAddress(context *gin.Context, req *dto.UserAddressDeleteRequest) (*dto.UserAddressDeleteResponse, error)
 	SetDefaultAddress(context *gin.Context, req *dto.UserAddressRequest) (*dto.UserAddressResponse, error)
+	Upload(context *gin.Context, file *multipart.FileHeader) (string, error)
+	Download(context *gin.Context) ([][]string, []string, error)
 }
 
 type UserAddressService struct {
@@ -111,12 +118,10 @@ func (s *UserAddressService) AddAddress(context *gin.Context, req *dto.UserAddre
 
 	userAddressModel := &model.MemberAddress{MemberID: uint64(userId), Address: req.Address, Tel: req.Tel,
 		ConsigneeName: req.ConsigneeName, Post: req.Post, ProvinceID: cast.ToInt64(req.ProvinceID), CityID: cast.ToInt64(req.CityID), AreaID: cast.ToInt64(req.AreaID)}
-	fmt.Println(userAddressModel)
 	result := s.db.Create(userAddressModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	fmt.Println(userAddressModel)
 
 	response := &dto.UserAddressResponse{}
 	err = copier.Copy(response, userAddressModel)
@@ -224,4 +229,104 @@ func (s *UserAddressService) SetDefaultAddress(context *gin.Context, req *dto.Us
 	}
 
 	return response, nil
+}
+func (s *UserAddressService) Upload(context *gin.Context, file *multipart.FileHeader) (string, error) {
+	userId, err := util.GetUserId(context)
+	if err != nil {
+		return "", errors.New("意外的错误")
+	}
+
+	titleList := []string{"地址", "电话", "联系人", "邮编"}
+	columnList := []string{"address", "tel", "consignee_name", "post"}
+	var insertColumnList []string
+
+	fileName := util.GenFileName()
+	fileType := util.GetImageFileType(file.Header["Content-Type"][0])
+	finalFileName := fileName + fileType
+	saveFilePath, _ := config.GetLocalUploadPath()
+	saveFilePath = saveFilePath + finalFileName
+	context.SaveUploadedFile(file, saveFilePath)
+
+	f, err := excelize.OpenFile(saveFilePath)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	index := -1
+	//读取表头和数据
+	rows, err := f.GetRows("Sheet1")
+	if err != nil {
+		return "", err
+	}
+	var userAddressList []model.MemberAddress
+	var userAddress model.MemberAddress
+	for rowIndex, row := range rows {
+		userAddress = model.MemberAddress{}
+		for colIdx, colCell := range row {
+			if rowIndex == 0 {
+				if !slices.Contains(titleList, colCell) {
+					return "", errors.New("表头不匹配")
+				}
+				index = slices.Index(titleList, colCell)
+				if index != -1 {
+					insertColumnList = append(insertColumnList, columnList[index])
+				}
+			} else {
+				if insertColumnList[colIdx] == "address" {
+					userAddress.Address = colCell
+				} else if insertColumnList[colIdx] == "tel" {
+					userAddress.Tel = colCell
+				} else if insertColumnList[colIdx] == "consignee_name" {
+					userAddress.ConsigneeName = colCell
+				} else if insertColumnList[colIdx] == "post" {
+					userAddress.Post = colCell
+				}
+				userAddress.ProvinceID = 123456
+				userAddress.CityID = 147852
+				userAddress.AreaID = 159753
+				userAddress.MemberID = uint64(userId)
+			}
+		}
+		if rowIndex != 0 {
+			userAddressList = append(userAddressList, userAddress)
+		}
+	}
+	//写入数据至db
+	result := s.db.CreateInBatches(userAddressList, 1000)
+	if result.Error != nil {
+		return "", result.Error
+	}
+
+	_ = os.Remove(saveFilePath)
+
+	return "ok", nil
+}
+
+func (s *UserAddressService) Download(context *gin.Context) ([][]string, []string, error) {
+	userId, err := util.GetUserId(context)
+	if err != nil {
+		return nil, nil, errors.New("意外的错误")
+	}
+	var userAddress model.MemberAddress
+	var userAddressList []model.MemberAddress
+	var query = s.db.Model(&userAddress).Select("id", "address", "tel", "consignee_name", "post").Where("member_id = ?", userId)
+
+	result := query.Find(&userAddressList)
+	if result.Error != nil {
+		return nil, nil, result.Error
+	}
+
+	var userAddressDownloadDtoList [][]string
+	if len(userAddressList) > 0 {
+		for _, singleUserAddress := range userAddressList {
+			var typeSingleUserAddress []string
+			typeSingleUserAddress = append(typeSingleUserAddress, fmt.Sprintf("%d", singleUserAddress.ID))
+			typeSingleUserAddress = append(typeSingleUserAddress, singleUserAddress.Address, singleUserAddress.Tel, singleUserAddress.ConsigneeName, singleUserAddress.Post)
+			userAddressDownloadDtoList = append(userAddressDownloadDtoList, typeSingleUserAddress)
+		}
+	}
+
+	titleList := []string{"ID", "地址", "电话", "联系人", "邮编"}
+
+	return userAddressDownloadDtoList, titleList, nil
 }

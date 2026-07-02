@@ -6,6 +6,7 @@ import (
 	"gin_demo/internal/util"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -204,4 +205,54 @@ func (h *UserAddressHandler) SetDefaultAddress(context *gin.Context) {
 
 	util.HttpResponse(context, 200, "ok", setDefaultAddressResponse)
 	return
+}
+func (h *UserAddressHandler) Upload(context *gin.Context) {
+	validate, ok := binding.Validator.Engine().(*validator.Validate)
+	if ok {
+		validate.RegisterStructValidation(util.FileUploadValidation, dto.UserAddressUploadRequest{})
+	}
+
+	var req dto.UserSingleFileUploadRequest
+	if err := context.ShouldBind(&req); err != nil {
+		util.HttpResponse(context, 500, err.Error(), nil)
+		return
+	}
+
+	//file, err := context.FormFile("file")
+	//if err != nil {
+	//	util.HttpResponse(context, 500, err.Error(), nil)
+	//	return
+	//}
+
+	form, err := context.MultipartForm()
+	if err != nil {
+		util.HttpResponse(context, 500, err.Error(), nil)
+		return
+	}
+	files := form.File["file"]
+	if files == nil {
+		util.HttpResponse(context, 500, "file is empty", nil)
+		return
+	}
+
+	file := files[0]
+	_, err = h.IUserAddressService.Upload(context, file)
+	if err != nil {
+		util.HttpResponse(context, 500, err.Error(), nil)
+		return
+	}
+
+	util.HttpResponse(context, 200, "ok", "")
+	return
+}
+
+func (h *UserAddressHandler) Download(context *gin.Context) {
+	userAddressDownloadListResponse, titleList, err := h.IUserAddressService.Download(context)
+	if err != nil {
+		util.HttpResponse(context, 500, err.Error(), nil)
+		return
+	}
+
+	fileName := util.GenFileName() + "_export.xlsx"
+	util.ExportToExcel(context, titleList, userAddressDownloadListResponse, fileName)
 }

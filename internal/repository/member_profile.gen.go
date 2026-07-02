@@ -47,7 +47,6 @@ func newMemberProfile(db *gorm.DB, opts ...gen.DOOption) memberProfile {
 	_memberProfile.AreaID = field.NewUint64(tableName, "area_id")
 	_memberProfile.Age = field.NewInt64(tableName, "age")
 	_memberProfile.Scores = field.NewInt64(tableName, "scores")
-	_memberProfile.IsRemindCheckIn = field.NewInt64(tableName, "is_remind_check_in")
 
 	_memberProfile.fillFieldMap()
 
@@ -77,7 +76,6 @@ type memberProfile struct {
 	AreaID              field.Uint64
 	Age                 field.Int64
 	Scores              field.Int64
-	IsRemindCheckIn     field.Int64
 
 	fieldMap map[string]field.Expr
 }
@@ -113,7 +111,6 @@ func (m *memberProfile) updateTableName(table string) *memberProfile {
 	m.AreaID = field.NewUint64(table, "area_id")
 	m.Age = field.NewInt64(table, "age")
 	m.Scores = field.NewInt64(table, "scores")
-	m.IsRemindCheckIn = field.NewInt64(table, "is_remind_check_in")
 
 	m.fillFieldMap()
 
@@ -130,7 +127,7 @@ func (m *memberProfile) GetFieldByName(fieldName string) (field.OrderExpr, bool)
 }
 
 func (m *memberProfile) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 20)
+	m.fieldMap = make(map[string]field.Expr, 19)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["member_id"] = m.MemberID
 	m.fieldMap["account_balance"] = m.AccountBalance
@@ -150,7 +147,6 @@ func (m *memberProfile) fillFieldMap() {
 	m.fieldMap["area_id"] = m.AreaID
 	m.fieldMap["age"] = m.Age
 	m.fieldMap["scores"] = m.Scores
-	m.fieldMap["is_remind_check_in"] = m.IsRemindCheckIn
 }
 
 func (m memberProfile) clone(db *gorm.DB) memberProfile {

@@ -3,8 +3,10 @@ package config
 import (
 	"errors"
 	"fmt"
+	"os"
 	"slices"
 
+	"github.com/golang-module/carbon"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -149,6 +151,20 @@ func GetLogPath() string {
 	return AppConfigs.Log.FilePath
 }
 
-func GetLocalUploadPath() string {
-	return AppConfigs.Server.LocalUploadPath
+func GetLocalUploadPath() (string, error) {
+	dateStr := carbon.Now().Format("Ymd")
+	localRootPath := AppConfigs.Server.LocalUploadPath
+	dirPath := localRootPath + dateStr + "/"
+	folder, errs := os.Open(dirPath)
+	if errs != nil {
+		if os.IsNotExist(errs) {
+			err := os.Mkdir(dirPath, os.ModePerm)
+			if err != nil {
+				//fmt.Println("Error creating directory:", err)
+				return "", err
+			}
+		}
+	}
+	folder.Close()
+	return dirPath, nil
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"gin_demo/internal/config"
 	"gin_demo/internal/dto"
+	MRand "math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -15,7 +16,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/golang-module/carbon"
+	"github.com/xuri/excelize/v2"
 )
 
 func HttpResponse(context *gin.Context, code int, message any, data any) {
@@ -56,6 +59,7 @@ func GenFileName() string {
 
 func GetImageFileType(fileType string) string {
 	fileType = strings.ToLower(fileType)
+	//https://blog.csdn.net/qq_26086231/article/details/135589839
 	switch fileType {
 	case "image/jpeg":
 		return ".jpg"
@@ -63,6 +67,14 @@ func GetImageFileType(fileType string) string {
 		return ".png"
 	case "image/gif":
 		return ".gif"
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		return ".xlsx"
+	case "application/x-7z-compressed":
+		return ".7z"
+	case "application/x-rar-compressed":
+		return ".rar"
+	case "application/zip":
+		return ".zip"
 	}
 
 	return ""
@@ -97,4 +109,69 @@ func sup(i int64, n int) string {
 		m = fmt.Sprintf("0%s", m)
 	}
 	return m
+}
+
+func ExportToExcel(context *gin.Context, titleList []string, data [][]string, fileName string) {
+	// 生成一个新的文件
+	file := excelize.NewFile()
+	defer file.Close()
+	// 添加sheet页
+	sheetName := "Sheet1"
+
+	file.SetSheetName("Sheet1", sheetName)
+	sheetID, _ := file.GetSheetIndex(sheetName)
+	file.SetActiveSheet(sheetID)
+	currentSheet := file.GetSheetName(sheetID)
+	// 插入表头
+	for colIdx, header := range titleList {
+		cell, _ := excelize.CoordinatesToCellName(colIdx+1, 1)
+		file.SetCellValue(currentSheet, cell, header)
+	}
+	// 插入内容
+	for rowIdx, row := range data {
+		for colIdx, value := range row {
+			cell, _ := excelize.CoordinatesToCellName(colIdx+1, rowIdx+2)
+			file.SetCellValue(currentSheet, cell, value)
+		}
+	}
+	// 设置 HTTP 响应的头信息
+	context.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	context.Header("Content-Disposition", "attachment; filename="+fileName)
+	// 将 Excel 文件写入 HTTP 响应
+	if err := file.Write(context.Writer); err != nil {
+		HttpResponse(context, 500, "failed", nil)
+		return
+	}
+}
+
+func CheckReqBind(context *gin.Context, obj any) any {
+	if err := context.ShouldBindJSON(obj); err != nil {
+		//errs, ok := err.(validator.ValidationErrors)
+		var errs validator.ValidationErrors
+		ok := errors.As(err, &errs)
+		if !ok {
+			return err.Error()
+		}
+		return RemoveTopStruct(errs.Translate(Trans))
+	}
+	return nil
+}
+
+func GenRandStrings(r *MRand.Rand, n int, randtype string) string {
+	var str string
+	if randtype == "number" {
+		str = "0123456789"
+	} else if randtype == "password" {
+		str = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~!@#$%^&*()-+_=,."
+	} else {
+		str = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	}
+	bytes := []byte(str)
+	var result []byte
+	//r := MRand.New(MRand.NewSource(time.Now().UnixNano()))
+	lenth := len(bytes)
+	for i := 0; i < n; i++ {
+		result = append(result, bytes[r.Intn(lenth)])
+	}
+	return string(result)
 }

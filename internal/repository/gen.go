@@ -17,37 +17,45 @@ import (
 
 var (
 	Q             = new(Query)
+	CaptchaCode   *captchaCode
 	Member        *member
 	MemberAccount *memberAccount
 	MemberAddress *memberAddress
 	MemberProfile *memberProfile
+	MemberUpload  *memberUpload
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	CaptchaCode = &Q.CaptchaCode
 	Member = &Q.Member
 	MemberAccount = &Q.MemberAccount
 	MemberAddress = &Q.MemberAddress
 	MemberProfile = &Q.MemberProfile
+	MemberUpload = &Q.MemberUpload
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:            db,
+		CaptchaCode:   newCaptchaCode(db, opts...),
 		Member:        newMember(db, opts...),
 		MemberAccount: newMemberAccount(db, opts...),
 		MemberAddress: newMemberAddress(db, opts...),
 		MemberProfile: newMemberProfile(db, opts...),
+		MemberUpload:  newMemberUpload(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
+	CaptchaCode   captchaCode
 	Member        member
 	MemberAccount memberAccount
 	MemberAddress memberAddress
 	MemberProfile memberProfile
+	MemberUpload  memberUpload
 }
 
 func (q *Query) Available() bool { return q.db != nil }
@@ -55,10 +63,12 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:            db,
+		CaptchaCode:   q.CaptchaCode.clone(db),
 		Member:        q.Member.clone(db),
 		MemberAccount: q.MemberAccount.clone(db),
 		MemberAddress: q.MemberAddress.clone(db),
 		MemberProfile: q.MemberProfile.clone(db),
+		MemberUpload:  q.MemberUpload.clone(db),
 	}
 }
 
@@ -73,26 +83,32 @@ func (q *Query) WriteDB() *Query {
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:            db,
+		CaptchaCode:   q.CaptchaCode.replaceDB(db),
 		Member:        q.Member.replaceDB(db),
 		MemberAccount: q.MemberAccount.replaceDB(db),
 		MemberAddress: q.MemberAddress.replaceDB(db),
 		MemberProfile: q.MemberProfile.replaceDB(db),
+		MemberUpload:  q.MemberUpload.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
+	CaptchaCode   ICaptchaCodeDo
 	Member        IMemberDo
 	MemberAccount IMemberAccountDo
 	MemberAddress IMemberAddressDo
 	MemberProfile IMemberProfileDo
+	MemberUpload  IMemberUploadDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
+		CaptchaCode:   q.CaptchaCode.WithContext(ctx),
 		Member:        q.Member.WithContext(ctx),
 		MemberAccount: q.MemberAccount.WithContext(ctx),
 		MemberAddress: q.MemberAddress.WithContext(ctx),
 		MemberProfile: q.MemberProfile.WithContext(ctx),
+		MemberUpload:  q.MemberUpload.WithContext(ctx),
 	}
 }
 

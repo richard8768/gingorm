@@ -21,17 +21,36 @@ func SetupRouter(engine *gin.Engine) *gin.Engine {
 	})
 
 	engine.GET("/", controller.HelloWorldHandler)
-	engine.GET("/get", controller.GetHandler)
-	engine.POST("/upload", controller.UploadHandler)
-	engine.GET("/alioss", controller.AliOssHandler)
+	//engine.GET("/alioss", controller.AliOssHandler)
+	messageService := (&service.MessageService{}).Create(config.DbClient)
+	messageHandler := &controller.MessageHandler{IMessageService: messageService}
+	engine.POST("/sendEmail", messageHandler.SendEmailHandler)
+	engine.POST("/sendSms", messageHandler.SendSmsHandler)
 
 	userApi := engine.Group("/user")
 	{
 		userService := (&service.UserService{}).Create(config.DbClient)
-		userHandler := &controller.UserHandler{IUserService: userService}
+		userSingleFileService := (&service.UserSingleFileService{}).Create(config.DbClient)
+		userHandler := &controller.UserHandler{IUserService: userService, IUserSingleFileService: userSingleFileService}
 		userApi.POST("/reg", userHandler.UserReg)
 		userApi.POST("/login", userHandler.UserLogin)
+		userApi.POST("/resetPwd", userHandler.UserResetPwd)
+		userApi.POST("/checkBindMobileEmail", userHandler.UserCheckBindMobileEmail)
 		userApi.Use(middlewares.AuthMiddleware()).GET("/index", userHandler.UserIndex)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/bindLoginMobile", userHandler.UserBindLoginMobile)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/checkBindMobile", userHandler.UserCheckBindMobileEmail)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/bindLoginEmail", userHandler.UserBindLoginEmail)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/checkBindEmail", userHandler.UserCheckBindMobileEmail)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/changePwd", userHandler.UserChangePwd)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/uploadAvatar", userHandler.UserUploadAvatar)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/updateProfile", userHandler.UserUpdateProfile)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/upload", userHandler.UserUpload)
+		userApi.Use(middlewares.AuthMiddleware()).GET("/download", userHandler.UserDownload)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/chunkUpload", userHandler.UserChunkUpload)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/chunkMerge", userHandler.UserChunkMerge)
+		userApi.Use(middlewares.AuthMiddleware()).GET("/chunkDownload", userHandler.UserChunkDownload)
+		userApi.POST("/logout", userHandler.UserLogout)
+
 	}
 
 	userAddressApi := engine.Group("/useraddress").Use(middlewares.AuthMiddleware())
@@ -44,6 +63,9 @@ func SetupRouter(engine *gin.Engine) *gin.Engine {
 		userAddressApi.POST("/edit", userAddressHandler.UpdateAddress)
 		userAddressApi.POST("/del", userAddressHandler.DeleteAddress)
 		userAddressApi.POST("/setdefault", userAddressHandler.SetDefaultAddress)
+		userAddressApi.POST("/upload", userAddressHandler.Upload)
+		userAddressApi.POST("/download", userAddressHandler.Download)
+
 	}
 	registerSwagger(engine)
 
