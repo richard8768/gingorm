@@ -1,1 +1,1 @@
-a gin gorm  demo using golang
+a gin gorm example
