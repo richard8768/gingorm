@@ -77,7 +77,7 @@ CREATE TABLE `member`  (
 -- ----------------------------
 -- Records of member
 -- ----------------------------
-INSERT INTO `member` VALUES (1, 'user001', '$2a$10$.GcpveOTBnDGXhWlnYkChuYZ8UbSwzAJAlhRR3RsQt3Gs7er/Vwu.', '13800138000', 'user001@user001.com', 0, 1773824205, '', 1782978436, '127.0.0.1', 0, '', 1, '', '', 1, 1782987606, 1, '');
+INSERT INTO `member` VALUES (1, 'user001', '$2a$10$.GcpveOTBnDGXhWlnYkChuYZ8UbSwzAJAlhRR3RsQt3Gs7er/Vwu.', '13800138000', 'user001@user001.com', 0, 1773824205, '', 1785384883, '127.0.0.1', 0, '', 1, '', '', 1, 1785384883, 1, '');
 
 -- ----------------------------
 -- Table structure for member_account
@@ -186,12 +186,18 @@ CREATE TABLE `member_upload`  (
   `member_id` int(10) UNSIGNED ZEROFILL NOT NULL,
   `file_name` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `save_file_path` varchar(800) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `is_large_file` tinyint NOT NULL DEFAULT 0 COMMENT '是否为大文件',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of member_upload
 -- ----------------------------
-INSERT INTO `member_upload` VALUES (1, 0000000001, '20260702162955_53ba3b303a21112def8571a550c11554.zip', './storage/public/upload/20260702/20260702162955_53ba3b303a21112def8571a550c11554.zip');
+INSERT INTO `member_upload` VALUES (1, 0000000001, '20260702162955_53ba3b303a21112def8571a550c11554.zip', './storage/public/upload/20260702/20260702162955_53ba3b303a21112def8571a550c11554.zip', 0);
+INSERT INTO `member_upload` VALUES (2, 0000000001, '20260806131828_7d280718d0d54ea7ab8a0f43a3b859f8.zip', './storage/public/upload/20260806/20260806131828_7d280718d0d54ea7ab8a0f43a3b859f8.zip', 0);
+INSERT INTO `member_upload` VALUES (3, 0000000001, '20260806212036_1f9dfe17b3cfb4e60f4bb2b2fb974e8d.zip', './storage/public/upload/20260806/20260806212036_1f9dfe17b3cfb4e60f4bb2b2fb974e8d.zip', 0);
+INSERT INTO `member_upload` VALUES (4, 0000000001, '20260806212527_5403a258043fa1ede1ec72d4ed304523.zip', './storage/public/upload/20260806/20260806212527_5403a258043fa1ede1ec72d4ed304523.zip', 0);
+INSERT INTO `member_upload` VALUES (5, 0000000001, '20260806213348_4a20d070472eac0ce272a0036cb6c299.zip', './storage/public/upload/20260806/20260806213348_4a20d070472eac0ce272a0036cb6c299.zip', 0);
+INSERT INTO `member_upload` VALUES (6, 0000000001, '20260806213420_392d3e127fb9602404708992b58bd626.zip', './storage/public/upload/20260806/20260806213420_392d3e127fb9602404708992b58bd626.zip', 0);
 
 SET FOREIGN_KEY_CHECKS = 1;

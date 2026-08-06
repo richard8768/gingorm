@@ -8,7 +8,7 @@ server:
 database:
   driver: mysql
   host: 192.168.92.133
-  port: 5127
+  port: 6127
   username: gingorm
   password: gingorm
   db_name: gingorm
@@ -21,7 +21,7 @@ database:
 redis:
   host: 192.168.92.133
   port: 6379
-  password: GeGFe5MshlaHdB6O9
+  password: GeGFe5MhlaHdB6O9
   data_base: 1
 
 log:

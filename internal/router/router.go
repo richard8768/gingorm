@@ -1,14 +1,14 @@
 package router
 
 import (
+	"gin_demo/docs"
 	"gin_demo/internal/config"
 	"gin_demo/internal/controller"
 	middlewares "gin_demo/internal/middleware"
 	"gin_demo/internal/service"
 	"gin_demo/internal/util"
 	"strconv"
-
-	docs "gin_demo/docs"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
@@ -16,6 +16,9 @@ import (
 )
 
 func SetupRouter(engine *gin.Engine) *gin.Engine {
+
+	engine.Static("/static", "./static")
+
 	engine.NoRoute(func(context *gin.Context) {
 		util.HttpResponse(context, 404, "Object not found.", nil)
 	})
@@ -30,12 +33,14 @@ func SetupRouter(engine *gin.Engine) *gin.Engine {
 	userApi := engine.Group("/user")
 	{
 		userService := (&service.UserService{}).Create(config.DbClient)
-		userSingleFileService := (&service.UserSingleFileService{}).Create(config.DbClient)
-		userHandler := &controller.UserHandler{IUserService: userService, IUserSingleFileService: userSingleFileService}
+		userSmallFileService := (&service.UserNormalFileService{}).Create(config.DbClient)
+		userLargeFileService := (&service.UserLargeFileService{}).Create(config.DbClient)
+		userHandler := &controller.UserHandler{IUserService: userService, IUserNormalFileService: userSmallFileService, IUserLargeFileService: userLargeFileService}
 		userApi.POST("/reg", userHandler.UserReg)
 		userApi.POST("/login", userHandler.UserLogin)
 		userApi.POST("/resetPwd", userHandler.UserResetPwd)
 		userApi.POST("/checkBindMobileEmail", userHandler.UserCheckBindMobileEmail)
+
 		userApi.Use(middlewares.AuthMiddleware()).GET("/index", userHandler.UserIndex)
 		userApi.Use(middlewares.AuthMiddleware()).POST("/bindLoginMobile", userHandler.UserBindLoginMobile)
 		userApi.Use(middlewares.AuthMiddleware()).POST("/checkBindMobile", userHandler.UserCheckBindMobileEmail)
@@ -46,7 +51,9 @@ func SetupRouter(engine *gin.Engine) *gin.Engine {
 		userApi.Use(middlewares.AuthMiddleware()).POST("/updateProfile", userHandler.UserUpdateProfile)
 		userApi.Use(middlewares.AuthMiddleware()).POST("/upload", userHandler.UserUpload)
 		userApi.Use(middlewares.AuthMiddleware()).GET("/download", userHandler.UserDownload)
-		userApi.Use(middlewares.AuthMiddleware()).POST("/chunkUpload", userHandler.UserChunkUpload)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/chunkInit", userHandler.UserChunkInit)
+		userApi.Use(util.TimeoutMiddleware(360*time.Second)).Use(middlewares.AuthMiddleware()).POST("/chunkUpload", userHandler.UserChunkUploadList)
+		userApi.Use(middlewares.AuthMiddleware()).GET("/chunkUploadQuery", userHandler.UserChunkUploadQuery)
 		userApi.Use(middlewares.AuthMiddleware()).POST("/chunkMerge", userHandler.UserChunkMerge)
 		userApi.Use(middlewares.AuthMiddleware()).GET("/chunkDownload", userHandler.UserChunkDownload)
 		userApi.POST("/logout", userHandler.UserLogout)
@@ -67,6 +74,8 @@ func SetupRouter(engine *gin.Engine) *gin.Engine {
 		userAddressApi.POST("/download", userAddressHandler.Download)
 
 	}
+	engine.Use(util.TimeoutMiddleware(60 * time.Second))
+
 	registerSwagger(engine)
 
 	return engine
@@ -76,6 +85,7 @@ func registerSwagger(r gin.IRouter) {
 	// API文档访问地址: http://host/swagger/index.html
 	// 注解定义可参考 https://github.com/swaggo/swag#declarative-comments-format
 	// 样例 https://github.com/swaggo/swag/blob/master/example/basic/api/api.go
+	//install gen docs tool go install github.com/swaggo/swag/cmd/swag@latest
 	port := strconv.Itoa(config.GetHttpPort())
 	docs.SwaggerInfo.BasePath = "/"
 	docs.SwaggerInfo.Title = "管理后台接口"

@@ -12,8 +12,8 @@ type CaptchaCode struct {
 	CaptchaType    int64  `gorm:"column:captcha_type;type:tinyint;not null;default:1;comment:1 mobile 2 email" json:"captcha_type"` // 1 mobile 2 email
 	CaptchaAccount string `gorm:"column:captcha_account;type:varchar(55);not null" json:"captcha_account"`
 	CaptchaCode    string `gorm:"column:captcha_code;type:varchar(6);not null" json:"captcha_code"`
-	IsExpired      uint64 `gorm:"column:is_expired;type:tinyint unsigned;not null;default:1;comment:1：未过期  2：已失效" json:"is_expired"` // 1：未过期  2：已失效
-	IsUsed         int64  `gorm:"column:is_used;type:tinyint;not null;comment:1：已使用  0：未使用" json:"is_used"`                          // 1：已使用  0：未使用
+	IsExpired      uint64 `gorm:"column:is_expired;type:tinyint unsigned;not null;comment:0：未过期  1：已失效" json:"is_expired"` // 0：未过期  1：已失效
+	IsUsed         int64  `gorm:"column:is_used;type:tinyint;not null;comment:1：已使用  0：未使用" json:"is_used"`                // 1：已使用  0：未使用
 	ExpiredTime    int64  `gorm:"column:expired_time;type:int;not null" json:"expired_time"`
 	CreatedAt      uint64 `gorm:"column:created_at;type:int;type:unsigned;not null;autoCreateTime" json:"created_at"`
 	UpdatedAt      uint64 `gorm:"column:updated_at;type:int;type:unsigned;not null;autoUpdateTime" json:"updated_at"`

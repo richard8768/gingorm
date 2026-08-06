@@ -39,8 +39,11 @@ var startCmd = &cobra.Command{
 		r = router.SetupRouter(r)
 
 		s := endless.NewServer(":"+port, r)
-		s.ReadHeaderTimeout = 20 * time.Second
-		s.WriteTimeout = 20 * time.Second
+		// 300 120 120 60
+		s.IdleTimeout = 600 * time.Second
+		s.ReadTimeout = 360 * time.Second
+		s.WriteTimeout = 360 * time.Second
+		s.ReadHeaderTimeout = 60 * time.Second
 		s.MaxHeaderBytes = 1 << 20
 
 		s.BeforeBegin = func(addr string) {

@@ -32,6 +32,7 @@ func newMemberUpload(db *gorm.DB, opts ...gen.DOOption) memberUpload {
 	_memberUpload.MemberID = field.NewUint64(tableName, "member_id")
 	_memberUpload.FileName = field.NewString(tableName, "file_name")
 	_memberUpload.SaveFilePath = field.NewString(tableName, "save_file_path")
+	_memberUpload.IsLargeFile = field.NewInt64(tableName, "is_large_file")
 
 	_memberUpload.fillFieldMap()
 
@@ -46,6 +47,7 @@ type memberUpload struct {
 	MemberID     field.Uint64
 	FileName     field.String
 	SaveFilePath field.String
+	IsLargeFile  field.Int64 // 是否为大文件
 
 	fieldMap map[string]field.Expr
 }
@@ -66,6 +68,7 @@ func (m *memberUpload) updateTableName(table string) *memberUpload {
 	m.MemberID = field.NewUint64(table, "member_id")
 	m.FileName = field.NewString(table, "file_name")
 	m.SaveFilePath = field.NewString(table, "save_file_path")
+	m.IsLargeFile = field.NewInt64(table, "is_large_file")
 
 	m.fillFieldMap()
 
@@ -82,11 +85,12 @@ func (m *memberUpload) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 }
 
 func (m *memberUpload) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 4)
+	m.fieldMap = make(map[string]field.Expr, 5)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["member_id"] = m.MemberID
 	m.fieldMap["file_name"] = m.FileName
 	m.fieldMap["save_file_path"] = m.SaveFilePath
+	m.fieldMap["is_large_file"] = m.IsLargeFile
 }
 
 func (m memberUpload) clone(db *gorm.DB) memberUpload {

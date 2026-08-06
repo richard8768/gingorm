@@ -12,6 +12,7 @@ type MemberUpload struct {
 	MemberID     uint64 `gorm:"column:member_id;type:int(10) unsigned zerofill;not null" json:"member_id"`
 	FileName     string `gorm:"column:file_name;type:varchar(300);not null" json:"file_name"`
 	SaveFilePath string `gorm:"column:save_file_path;type:varchar(800);not null" json:"save_file_path"`
+	IsLargeFile  int64  `gorm:"column:is_large_file;type:tinyint;not null;comment:是否为大文件" json:"is_large_file"` // 是否为大文件
 }
 
 // TableName MemberUpload's table name

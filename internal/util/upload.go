@@ -13,7 +13,7 @@ import (
 )
 
 func FileUploadValidation(sl validator.StructLevel) {
-	form := sl.Current().Interface().(dto.UserSingleFileUploadRequest)
+	form := sl.Current().Interface().(dto.UserNormalFileUploadRequest)
 	formType := reflect.TypeOf(form)
 
 	for i := 0; i < formType.NumField(); i++ {

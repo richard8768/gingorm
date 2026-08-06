@@ -51,7 +51,7 @@ type captchaCode struct {
 	CaptchaType    field.Int64 // 1 mobile 2 email
 	CaptchaAccount field.String
 	CaptchaCode    field.String
-	IsExpired      field.Uint64 // 1：未过期  2：已失效
+	IsExpired      field.Uint64 // 0：未过期  1：已失效
 	IsUsed         field.Int64  // 1：已使用  0：未使用
 	ExpiredTime    field.Int64
 	CreatedAt      field.Uint64

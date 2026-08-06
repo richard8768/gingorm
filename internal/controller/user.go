@@ -1,24 +1,22 @@
 package controller
 
 import (
-	"errors"
 	"gin_demo/internal/dto"
 	"gin_demo/internal/service"
 	"gin_demo/internal/util"
 	"io"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"strconv"
+	"sync/atomic"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
-	"github.com/go-playground/validator/v10"
 )
 
 type UserHandler struct {
 	IUserService           service.IUserService
-	IUserSingleFileService service.IUserSingleFileService
+	IUserNormalFileService service.IUserNormalFileService
+	IUserLargeFileService  service.IUserLargeFileService
 }
 
 // user reg
@@ -33,13 +31,8 @@ type UserHandler struct {
 // @Router /user/reg [post]
 func (h *UserHandler) UserReg(context *gin.Context) {
 	var req dto.UserCreateRequest
-	if err := context.ShouldBindJSON(&req); err != nil {
-		errs, ok := err.(validator.ValidationErrors)
-		if !ok {
-			util.HttpResponse(context, 500, err.Error(), nil)
-			return
-		}
-		util.HttpResponse(context, 500, util.RemoveTopStruct(errs.Translate(util.Trans)), nil)
+	if err := util.CheckReqBindJson(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
 		return
 	}
 
@@ -65,13 +58,8 @@ func (h *UserHandler) UserReg(context *gin.Context) {
 // @Router /user/login [post]
 func (h *UserHandler) UserLogin(context *gin.Context) {
 	var req dto.UserLoginRequest
-	if err := context.ShouldBindJSON(&req); err != nil {
-		errs, ok := err.(validator.ValidationErrors)
-		if !ok {
-			util.HttpResponse(context, 500, err.Error(), nil)
-			return
-		}
-		util.HttpResponse(context, 500, util.RemoveTopStruct(errs.Translate(util.Trans)), nil)
+	if err := util.CheckReqBindJson(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
 		return
 	}
 
@@ -124,7 +112,7 @@ func (h *UserHandler) UserLogout(context *gin.Context) {
 
 func (h *UserHandler) UserBindLoginMobile(context *gin.Context) {
 	var req dto.UserBindLoginMobileRequest
-	if err := util.CheckReqBind(context, &req); err != nil {
+	if err := util.CheckReqBindJson(context, &req); err != nil {
 		util.HttpResponse(context, 500, err, nil)
 		return
 	}
@@ -138,7 +126,7 @@ func (h *UserHandler) UserBindLoginMobile(context *gin.Context) {
 
 func (h *UserHandler) UserBindLoginEmail(context *gin.Context) {
 	var req dto.UserBindLoginEmailRequest
-	if err := util.CheckReqBind(context, &req); err != nil {
+	if err := util.CheckReqBindJson(context, &req); err != nil {
 		util.HttpResponse(context, 500, err, nil)
 		return
 	}
@@ -152,7 +140,7 @@ func (h *UserHandler) UserBindLoginEmail(context *gin.Context) {
 
 func (h *UserHandler) UserCheckBindMobileEmail(context *gin.Context) {
 	var req dto.UserCheckBindMobileEmailRequest
-	if err := util.CheckReqBind(context, &req); err != nil {
+	if err := util.CheckReqBindJson(context, &req); err != nil {
 		util.HttpResponse(context, 500, err, nil)
 		return
 	}
@@ -166,7 +154,7 @@ func (h *UserHandler) UserCheckBindMobileEmail(context *gin.Context) {
 
 func (h *UserHandler) UserChangePwd(context *gin.Context) {
 	var req dto.UserChangePwdRequest
-	if err := util.CheckReqBind(context, &req); err != nil {
+	if err := util.CheckReqBindJson(context, &req); err != nil {
 		util.HttpResponse(context, 500, err, nil)
 		return
 	}
@@ -180,7 +168,7 @@ func (h *UserHandler) UserChangePwd(context *gin.Context) {
 
 func (h *UserHandler) UserUpdateProfile(context *gin.Context) {
 	var req dto.UserUpdateProfileRequest
-	if err := util.CheckReqBind(context, &req); err != nil {
+	if err := util.CheckReqBindJson(context, &req); err != nil {
 		util.HttpResponse(context, 500, err, nil)
 		return
 	}
@@ -194,7 +182,7 @@ func (h *UserHandler) UserUpdateProfile(context *gin.Context) {
 
 func (h *UserHandler) UserResetPwd(context *gin.Context) {
 	var req dto.UserResetPwdRequest
-	if err := util.CheckReqBind(context, &req); err != nil {
+	if err := util.CheckReqBindJson(context, &req); err != nil {
 		util.HttpResponse(context, 500, err, nil)
 		return
 	}
@@ -213,16 +201,16 @@ func (h *UserHandler) UserResetPwd(context *gin.Context) {
 // @Tags UploadHandler
 // @Accept json
 // @Produce json
-// @Param body body dto.UserSingleFileUploadRequest true "请求body"
-// @Success 200 {object} dto.UserSingleFileUploadResponse
+// @Param body body dto.UserNormalFileUploadRequest true "请求body"
+// @Success 200 {object} dto.UserNormalFileUploadResponse
 // @Router /user/upload [post]
 func (h *UserHandler) UserUpload(context *gin.Context) {
-	file, err := handleFileUpload(context, "file")
+	file, err := util.HandleFileUpload(context, "file")
 	if err != nil {
 		util.HttpResponse(context, 500, err.Error(), nil)
 		return
 	}
-	userUploadResponse, err := h.IUserSingleFileService.Upload(context, file, true)
+	userUploadResponse, err := h.IUserNormalFileService.Upload(context, file, true)
 	if err != nil {
 		util.HttpResponse(context, 500, err.Error(), nil)
 		return
@@ -232,59 +220,18 @@ func (h *UserHandler) UserUpload(context *gin.Context) {
 }
 
 func (h *UserHandler) UserUploadAvatar(context *gin.Context) {
-	file, err := handleFileUpload(context, "image")
+	file, err := util.HandleFileUpload(context, "image")
 	if err != nil {
 		util.HttpResponse(context, 500, err.Error(), nil)
 		return
 	}
-	userUploadAvatarResponse, err := h.IUserSingleFileService.Upload(context, file, false)
+	userUploadAvatarResponse, err := h.IUserNormalFileService.Upload(context, file, false)
 	if err != nil {
 		util.HttpResponse(context, 500, err.Error(), nil)
 		return
 	}
 	util.HttpResponse(context, 200, "ok", userUploadAvatarResponse)
 	return
-}
-
-func handleFileUpload(context *gin.Context, fileType string) (*multipart.FileHeader, error) {
-	if fileType != "file" && fileType != "image" {
-		return nil, errors.New("invalid file type")
-	}
-	validate, ok := binding.Validator.Engine().(*validator.Validate)
-	if fileType == "file" {
-		if ok {
-			validate.RegisterStructValidation(util.FileUploadValidation, dto.UserSingleFileUploadRequest{})
-		}
-	} else {
-		if ok {
-			validate.RegisterStructValidation(util.FileUploadValidation, dto.UserAvatarUploadRequest{})
-		}
-	}
-	var req dto.UserSingleFileUploadRequest
-	if err := context.ShouldBind(&req); err != nil {
-		util.HttpResponse(context, 500, err.Error(), nil)
-		return nil, err
-	}
-
-	//file, err := context.FormFile("file")
-	//if err != nil {
-	//	util.HttpResponse(context, 500, err.Error(), nil)
-	//	return
-	//}
-
-	form, err := context.MultipartForm()
-	if err != nil {
-		util.HttpResponse(context, 500, err.Error(), nil)
-		return nil, err
-	}
-	files := form.File["file"]
-	if files == nil {
-		util.HttpResponse(context, 500, "file is empty", nil)
-		return nil, err
-	}
-
-	file := files[0]
-	return file, nil
 }
 
 // download single file
@@ -294,22 +241,17 @@ func handleFileUpload(context *gin.Context, fileType string) (*multipart.FileHea
 // @Tags UploadHandler
 // @Accept json
 // @Produce json
-// @Param body body dto.UserSingleFileDownloadRequest true "下载文件ID"
-// @Success 200 {object} dto.UserSingleFileDownloadRequest
+// @Param body body dto.UserNormalFileDownloadRequest true "下载文件ID"
+// @Success 200 {object} dto.UserNormalFileDownloadRequest
 // @Router /user/download [get]
 func (h *UserHandler) UserDownload(context *gin.Context) {
-	var req dto.UserSingleFileDownloadRequest
-	if err := context.ShouldBindQuery(&req); err != nil {
-		errs, ok := err.(validator.ValidationErrors)
-		if !ok {
-			util.HttpResponse(context, 500, err.Error(), nil)
-			return
-		}
-		util.HttpResponse(context, 500, util.RemoveTopStruct(errs.Translate(util.Trans)), nil)
+	var req dto.UserNormalFileDownloadRequest
+	if err := util.CheckReqBindQuery(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
 		return
 	}
 
-	filename, filepath, err := h.IUserSingleFileService.Download(context, &req)
+	filename, filepath, err := h.IUserNormalFileService.Download(context, &req)
 	if err != nil {
 		util.HttpResponse(context, 500, err.Error(), nil)
 		return
@@ -325,18 +267,117 @@ func (h *UserHandler) UserDownload(context *gin.Context) {
 
 	stat, _ := f.Stat()
 	context.Writer.Header().Set("Content-Type", "application/octet-stream")
-	context.Writer.Header().Set("Content-Disposition", `attachment; filename=`+filename+``)
+	context.Writer.Header().Set("Content-Disposition", `attachment; filename="`+filename+`"`)
 	context.Writer.Header().Set("Content-Length", strconv.FormatInt(stat.Size(), 10))
 	io.Copy(context.Writer, f)
 }
-func (h *UserHandler) UserChunkUpload(context *gin.Context) {
-	util.HttpResponse(context, 200, "ok", nil)
+
+func (h *UserHandler) UserChunkInit(context *gin.Context) {
+	var req dto.UserLargeFileUploadInitRequest
+	if err := util.CheckReqBind(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
+		return
+	}
+	response, err := h.IUserLargeFileService.ChunkInit(context, &req)
+	if err != nil {
+		util.HttpResponse(context, 500, err.Error(), nil)
+		return
+	}
+	util.HttpResponse(context, 200, "ok", response)
+}
+
+var counter int64
+
+func (h *UserHandler) UserChunkUploadList(context *gin.Context) {
+	util.InitUpload(context)
+	count := atomic.LoadInt64(&counter)
+	if int(count) > 4 {
+		context.AbortWithStatusJSON(500, gin.H{
+			"code":    500,
+			"message": "too many connections",
+			"data":    nil,
+		})
+		return
+	}
+	atomic.AddInt64(&counter, 1)
+	var req dto.UserLargeFileUploadRequest
+	if err := util.CheckReqBindHeader(context, &req); err != nil {
+		atomic.AddInt64(&counter, -1)
+		util.HttpResponse(context, 500, err, nil)
+		return
+	}
+
+	response, err := h.IUserLargeFileService.ChunkUpload(context, &req)
+	_ = context.Request.Body.Close()
+	atomic.AddInt64(&counter, -1)
+	if err != nil {
+		util.HttpResponse(context, 500, err.Error(), nil)
+		return
+	}
+	util.HttpResponse(context, 200, "ok", response)
+}
+
+func (h *UserHandler) UserChunkUploadQuery(context *gin.Context) {
+	var req dto.UserChunkUploadIdRequest
+	if err := util.CheckReqBindQuery(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
+		return
+	}
+
+	response, err := h.IUserLargeFileService.UserChunkUploadQuery(context, &req)
+	if err != nil {
+		util.HttpResponse(context, 500, err.Error(), nil)
+		return
+	}
+	util.HttpResponse(context, 200, "ok", response)
 }
 
 func (h *UserHandler) UserChunkMerge(context *gin.Context) {
-	util.HttpResponse(context, 200, "ok", nil)
+	var req dto.UserChunkUploadIdRequest
+	if err := util.CheckReqBind(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
+		return
+	}
+	_, err := h.IUserLargeFileService.ChunkMerge(context, &req, true)
+	if err != nil {
+		util.HttpResponse(context, 500, err.Error(), nil)
+		return
+	}
+	util.HttpResponse(context, 200, "ok", "请求成功,文件正在合并中...")
 }
 
 func (h *UserHandler) UserChunkDownload(context *gin.Context) {
-	util.HttpResponse(context, 200, "ok", nil)
+	var req dto.UserNormalFileDownloadRequest
+	if err := util.CheckReqBindQuery(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
+		return
+	}
+
+	filename, filepath, err := h.IUserNormalFileService.Download(context, &req)
+	if err != nil {
+		util.HttpResponse(context, 500, err.Error(), nil)
+		return
+	}
+
+	file, err := os.Open(filepath)
+	if err != nil {
+		util.HttpResponse(context, 500, err.Error(), nil)
+		return
+	}
+	defer file.Close()
+
+	fileInfo, err := file.Stat()
+	if err != nil {
+		util.HttpResponse(context, 500, err.Error(), nil)
+		return
+	}
+
+	fileSize := strconv.FormatInt(fileInfo.Size(), 10)
+
+	context.Writer.Header().Set("Content-Type", "application/octet-stream")
+	context.Writer.Header().Set("Content-Disposition", `attachment; filename="`+filename+`"`)
+	context.Writer.Header().Set("Content-Length", fileSize)
+
+	http.ServeContent(context.Writer, context.Request, filename, fileInfo.ModTime(), file)
+
 }

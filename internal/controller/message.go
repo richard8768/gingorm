@@ -14,7 +14,7 @@ type MessageHandler struct {
 
 func (h *MessageHandler) SendEmailHandler(context *gin.Context) {
 	var req dto.SendEmailRequest
-	if err := util.CheckReqBind(context, &req); err != nil {
+	if err := util.CheckReqBindJson(context, &req); err != nil {
 		util.HttpResponse(context, 500, err, nil)
 		return
 	}
@@ -31,7 +31,7 @@ func (h *MessageHandler) SendEmailHandler(context *gin.Context) {
 
 func (h *MessageHandler) SendSmsHandler(context *gin.Context) {
 	var req dto.SendSmsRequest
-	if err := util.CheckReqBind(context, &req); err != nil {
+	if err := util.CheckReqBindJson(context, &req); err != nil {
 		util.HttpResponse(context, 500, err, nil)
 		return
 	}

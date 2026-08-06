@@ -28,13 +28,8 @@ type UserAddressHandler struct {
 // @Router /useraddress/index [get]
 func (h *UserAddressHandler) AddressList(context *gin.Context) {
 	var req dto.UserAddressSearchRequest
-	if err := context.ShouldBindQuery(&req); err != nil {
-		errs, ok := err.(validator.ValidationErrors)
-		if !ok {
-			util.HttpResponse(context, 500, err.Error(), nil)
-			return
-		}
-		util.HttpResponse(context, 500, util.RemoveTopStruct(errs.Translate(util.Trans)), nil)
+	if err := util.CheckReqBindQuery(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
 		return
 	}
 
@@ -60,13 +55,8 @@ func (h *UserAddressHandler) AddressList(context *gin.Context) {
 // @Router /useraddress/info [get]
 func (h *UserAddressHandler) AddressInfo(context *gin.Context) {
 	var req dto.UserAddressGetRequest
-	if err := context.ShouldBindQuery(&req); err != nil {
-		errs, ok := err.(validator.ValidationErrors)
-		if !ok {
-			util.HttpResponse(context, 500, err.Error(), nil)
-			return
-		}
-		util.HttpResponse(context, 500, util.RemoveTopStruct(errs.Translate(util.Trans)), nil)
+	if err := util.CheckReqBindQuery(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
 		return
 	}
 
@@ -91,13 +81,8 @@ func (h *UserAddressHandler) AddressInfo(context *gin.Context) {
 // @Router /useraddress/add [post]
 func (h *UserAddressHandler) AddAddress(context *gin.Context) {
 	var req dto.UserAddressCreateRequest
-	if err := context.ShouldBindJSON(&req); err != nil {
-		errs, ok := err.(validator.ValidationErrors)
-		if !ok {
-			util.HttpResponse(context, 500, err.Error(), nil)
-			return
-		}
-		util.HttpResponse(context, 500, util.RemoveTopStruct(errs.Translate(util.Trans)), nil)
+	if err := util.CheckReqBindJson(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
 		return
 	}
 
@@ -123,13 +108,8 @@ func (h *UserAddressHandler) AddAddress(context *gin.Context) {
 // @Router /useraddress/edit [post]
 func (h *UserAddressHandler) UpdateAddress(context *gin.Context) {
 	var req dto.UserAddressUpdateRequest
-	if err := context.ShouldBindJSON(&req); err != nil {
-		errs, ok := err.(validator.ValidationErrors)
-		if !ok {
-			util.HttpResponse(context, 500, err.Error(), nil)
-			return
-		}
-		util.HttpResponse(context, 500, util.RemoveTopStruct(errs.Translate(util.Trans)), nil)
+	if err := util.CheckReqBindJson(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
 		return
 	}
 
@@ -155,13 +135,8 @@ func (h *UserAddressHandler) UpdateAddress(context *gin.Context) {
 // @Router /useraddress/del [post]
 func (h *UserAddressHandler) DeleteAddress(context *gin.Context) {
 	var req dto.UserAddressDeleteRequest
-	if err := context.ShouldBindJSON(&req); err != nil {
-		errs, ok := err.(validator.ValidationErrors)
-		if !ok {
-			util.HttpResponse(context, 500, err.Error(), nil)
-			return
-		}
-		util.HttpResponse(context, 500, util.RemoveTopStruct(errs.Translate(util.Trans)), nil)
+	if err := util.CheckReqBindJson(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
 		return
 	}
 
@@ -187,13 +162,8 @@ func (h *UserAddressHandler) DeleteAddress(context *gin.Context) {
 // @Router /useraddress/setdefault [post]
 func (h *UserAddressHandler) SetDefaultAddress(context *gin.Context) {
 	var req dto.UserAddressRequest
-	if err := context.ShouldBindJSON(&req); err != nil {
-		errs, ok := err.(validator.ValidationErrors)
-		if !ok {
-			util.HttpResponse(context, 500, err.Error(), nil)
-			return
-		}
-		util.HttpResponse(context, 500, util.RemoveTopStruct(errs.Translate(util.Trans)), nil)
+	if err := util.CheckReqBindJson(context, &req); err != nil {
+		util.HttpResponse(context, 500, err, nil)
 		return
 	}
 
@@ -212,7 +182,7 @@ func (h *UserAddressHandler) Upload(context *gin.Context) {
 		validate.RegisterStructValidation(util.FileUploadValidation, dto.UserAddressUploadRequest{})
 	}
 
-	var req dto.UserSingleFileUploadRequest
+	var req dto.UserNormalFileUploadRequest
 	if err := context.ShouldBind(&req); err != nil {
 		util.HttpResponse(context, 500, err.Error(), nil)
 		return
