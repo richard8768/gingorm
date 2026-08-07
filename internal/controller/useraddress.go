@@ -16,9 +16,9 @@ type UserAddressHandler struct {
 
 // get user address list
 // @Summary AddressList
-// @Schemes
+// @Schemes http https
 // @Description AddressList
-// @Tags AddressList
+// @Tags UserAddress
 // @Accept json
 // @Produce json
 // @Param page query int false "page"
@@ -45,9 +45,9 @@ func (h *UserAddressHandler) AddressList(context *gin.Context) {
 
 // get user address info
 // @Summary AddressInfo
-// @Schemes
+// @Schemes http https
 // @Description AddressInfo
-// @Tags AddressInfo
+// @Tags UserAddress
 // @Accept json
 // @Produce json
 // @Param id query int true "id"
@@ -71,9 +71,9 @@ func (h *UserAddressHandler) AddressInfo(context *gin.Context) {
 
 // add user address
 // @Summary AddAddress
-// @Schemes
+// @Schemes http https
 // @Description AddAddress
-// @Tags AddAddress
+// @Tags UserAddress
 // @Accept json
 // @Produce json
 // @Param body body dto.UserAddressCreateRequest true "请求body"
@@ -98,9 +98,9 @@ func (h *UserAddressHandler) AddAddress(context *gin.Context) {
 
 // edit user address
 // @Summary UpdateAddress
-// @Schemes
+// @Schemes http https
 // @Description UpdateAddress
-// @Tags UpdateAddress
+// @Tags UserAddress
 // @Accept json
 // @Produce json
 // @Param body body dto.UserAddressUpdateRequest true "请求body"
@@ -125,9 +125,9 @@ func (h *UserAddressHandler) UpdateAddress(context *gin.Context) {
 
 // delete user address
 // @Summary DeleteAddress
-// @Schemes
+// @Schemes http https
 // @Description DeleteAddress
-// @Tags DeleteAddress
+// @Tags UserAddress
 // @Accept json
 // @Produce json
 // @Param body body dto.UserAddressDeleteRequest true "请求body"
@@ -152,9 +152,9 @@ func (h *UserAddressHandler) DeleteAddress(context *gin.Context) {
 
 // set user default address
 // @Summary SetDefaultAddress
-// @Schemes
+// @Schemes http https
 // @Description SetDefaultAddress
-// @Tags SetDefaultAddress
+// @Tags UserAddress
 // @Accept json
 // @Produce json
 // @Param body body dto.UserAddressRequest true "请求body"
@@ -176,6 +176,17 @@ func (h *UserAddressHandler) SetDefaultAddress(context *gin.Context) {
 	util.HttpResponse(context, 200, "ok", setDefaultAddressResponse)
 	return
 }
+
+// upload address excel file
+// @Summary upload address excel file
+// @Schemes http https
+// @Description upload address excel file
+// @Tags UserAddress
+// @Accept multipart/form-data
+// @Produce json
+// @Param file formData file true "文件"
+// @Success 200 {string} ok
+// @Router /useraddress/upload [post]
 func (h *UserAddressHandler) Upload(context *gin.Context) {
 	validate, ok := binding.Validator.Engine().(*validator.Validate)
 	if ok {
@@ -212,10 +223,17 @@ func (h *UserAddressHandler) Upload(context *gin.Context) {
 		return
 	}
 
-	util.HttpResponse(context, 200, "ok", "")
+	util.HttpResponse(context, 200, "ok", "ok")
 	return
 }
 
+// download address excel file
+// @Summary download address excel file
+// @Schemes http https
+// @Description download address excel file
+// @Tags UserAddress
+// @Success 200 {object} gin.Context
+// @Router /useraddress/download [get]
 func (h *UserAddressHandler) Download(context *gin.Context) {
 	userAddressDownloadListResponse, titleList, err := h.IUserAddressService.Download(context)
 	if err != nil {

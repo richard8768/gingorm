@@ -43,9 +43,9 @@ func SetupRouter(engine *gin.Engine) *gin.Engine {
 
 		userApi.Use(middlewares.AuthMiddleware()).GET("/index", userHandler.UserIndex)
 		userApi.Use(middlewares.AuthMiddleware()).POST("/bindLoginMobile", userHandler.UserBindLoginMobile)
-		userApi.Use(middlewares.AuthMiddleware()).POST("/checkBindMobile", userHandler.UserCheckBindMobileEmail)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/checkBindMobile", userHandler.UserCheckBindMobile)
 		userApi.Use(middlewares.AuthMiddleware()).POST("/bindLoginEmail", userHandler.UserBindLoginEmail)
-		userApi.Use(middlewares.AuthMiddleware()).POST("/checkBindEmail", userHandler.UserCheckBindMobileEmail)
+		userApi.Use(middlewares.AuthMiddleware()).POST("/checkBindEmail", userHandler.UserCheckBindEmail)
 		userApi.Use(middlewares.AuthMiddleware()).POST("/changePwd", userHandler.UserChangePwd)
 		userApi.Use(middlewares.AuthMiddleware()).POST("/uploadAvatar", userHandler.UserUploadAvatar)
 		userApi.Use(middlewares.AuthMiddleware()).POST("/updateProfile", userHandler.UserUpdateProfile)
@@ -71,7 +71,7 @@ func SetupRouter(engine *gin.Engine) *gin.Engine {
 		userAddressApi.POST("/del", userAddressHandler.DeleteAddress)
 		userAddressApi.POST("/setdefault", userAddressHandler.SetDefaultAddress)
 		userAddressApi.POST("/upload", userAddressHandler.Upload)
-		userAddressApi.POST("/download", userAddressHandler.Download)
+		userAddressApi.GET("/download", userAddressHandler.Download)
 
 	}
 	engine.Use(util.TimeoutMiddleware(60 * time.Second))

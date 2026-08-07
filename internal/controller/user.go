@@ -21,9 +21,9 @@ type UserHandler struct {
 
 // user reg
 // @Summary UserReg
-// @Schemes
+// @Schemes http https
 // @Description UserReg
-// @Tags UserReg
+// @Tags User
 // @Accept json
 // @Produce json
 // @Param body body dto.UserCreateRequest true "请求body"
@@ -48,9 +48,9 @@ func (h *UserHandler) UserReg(context *gin.Context) {
 
 // user login
 // @Summary UserLogin
-// @Schemes
+// @Schemes http https
 // @Description UserLogin
-// @Tags UserLogin
+// @Tags User
 // @Accept json
 // @Produce json
 // @Param body body dto.UserLoginRequest true "请求body"
@@ -74,9 +74,9 @@ func (h *UserHandler) UserLogin(context *gin.Context) {
 
 // user index
 // @Summary UserIndex
-// @Schemes
+// @Schemes http https
 // @Description UserIndex
-// @Tags UserIndex
+// @Tags User
 // @Accept json
 // @Produce json
 // @Success 200 {object} dto.UserResponse
@@ -93,9 +93,9 @@ func (h *UserHandler) UserIndex(context *gin.Context) {
 
 // user logout
 // @Summary UserLogout
-// @Schemes
+// @Schemes http https
 // @Description UserLogout
-// @Tags UserLogout
+// @Tags User
 // @Accept json
 // @Produce json
 // @Success 200 {object} dto.UserLoginResponse
@@ -110,6 +110,16 @@ func (h *UserHandler) UserLogout(context *gin.Context) {
 	return
 }
 
+// user bind login mobile
+// @Summary user bind login mobile
+// @Schemes http https
+// @Description user bind login mobile
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param body body dto.UserBindLoginMobileRequest true "请求body"
+// @Success 200 {string} ok
+// @Router /user/bindLoginMobile [post]
 func (h *UserHandler) UserBindLoginMobile(context *gin.Context) {
 	var req dto.UserBindLoginMobileRequest
 	if err := util.CheckReqBindJson(context, &req); err != nil {
@@ -121,9 +131,19 @@ func (h *UserHandler) UserBindLoginMobile(context *gin.Context) {
 		util.HttpResponse(context, 500, err.Error(), nil)
 		return
 	}
-	util.HttpResponse(context, 200, "ok", nil)
+	util.HttpResponse(context, 200, "ok", "ok")
 }
 
+// user bind login email
+// @Summary user bind login email
+// @Schemes http https
+// @Description user bind login email
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param body body dto.UserBindLoginEmailRequest true "请求body"
+// @Success 200 {string} ok
+// @Router /user/bindLoginEmail [post]
 func (h *UserHandler) UserBindLoginEmail(context *gin.Context) {
 	var req dto.UserBindLoginEmailRequest
 	if err := util.CheckReqBindJson(context, &req); err != nil {
@@ -135,10 +155,52 @@ func (h *UserHandler) UserBindLoginEmail(context *gin.Context) {
 		util.HttpResponse(context, 500, err.Error(), nil)
 		return
 	}
-	util.HttpResponse(context, 200, "ok", nil)
+	util.HttpResponse(context, 200, "ok", "ok")
 }
 
+// user check bind login email/mobile
+// @Summary user check bind login email/mobile
+// @Schemes http https
+// @Description user check bind login email/mobile
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param body body dto.UserCheckBindMobileEmailRequest true "请求body"
+// @Success 200 {object} dto.UserCheckBindMobileEmailResponse
+// @Router /user/checkBindMobile [post]
+func (h *UserHandler) UserCheckBindMobile(context *gin.Context) {
+	h.handleUserCheckBindMobileEmail(context)
+}
+
+// user check bind login email/mobile
+// @Summary user check bind login email/mobile
+// @Schemes http https
+// @Description user check bind login email/mobile
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param body body dto.UserCheckBindMobileEmailRequest true "请求body"
+// @Success 200 {object} dto.UserCheckBindMobileEmailResponse
+// @Router /user/checkBindEmail [post]
+func (h *UserHandler) UserCheckBindEmail(context *gin.Context) {
+	h.handleUserCheckBindMobileEmail(context)
+}
+
+// user check bind login email/mobile
+// @Summary user check bind login email/mobile
+// @Schemes http https
+// @Description user check bind login email/mobile
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param body body dto.UserCheckBindMobileEmailRequest true "请求body"
+// @Success 200 {object} dto.UserCheckBindMobileEmailResponse
+// @Router /user/checkBindMobileEmail [post]
 func (h *UserHandler) UserCheckBindMobileEmail(context *gin.Context) {
+	h.handleUserCheckBindMobileEmail(context)
+}
+
+func (h *UserHandler) handleUserCheckBindMobileEmail(context *gin.Context) {
 	var req dto.UserCheckBindMobileEmailRequest
 	if err := util.CheckReqBindJson(context, &req); err != nil {
 		util.HttpResponse(context, 500, err, nil)
@@ -152,6 +214,16 @@ func (h *UserHandler) UserCheckBindMobileEmail(context *gin.Context) {
 	util.HttpResponse(context, 200, "ok", UserCheckBindMobileEmailResponse)
 }
 
+// user change password
+// @Summary user change password
+// @Schemes http https
+// @Description user change password
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param body body dto.UserChangePwdRequest true "请求body"
+// @Success 200 {string} ok
+// @Router /user/changePwd [post]
 func (h *UserHandler) UserChangePwd(context *gin.Context) {
 	var req dto.UserChangePwdRequest
 	if err := util.CheckReqBindJson(context, &req); err != nil {
@@ -163,9 +235,19 @@ func (h *UserHandler) UserChangePwd(context *gin.Context) {
 		util.HttpResponse(context, 500, err.Error(), nil)
 		return
 	}
-	util.HttpResponse(context, 200, "ok", nil)
+	util.HttpResponse(context, 200, "ok", "ok")
 }
 
+// user update profile
+// @Summary user update profile
+// @Schemes http https
+// @Description user update profile
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param body body dto.UserUpdateProfileRequest true "请求body"
+// @Success 200 {string} ok
+// @Router /user/updateProfile [post]
 func (h *UserHandler) UserUpdateProfile(context *gin.Context) {
 	var req dto.UserUpdateProfileRequest
 	if err := util.CheckReqBindJson(context, &req); err != nil {
@@ -177,9 +259,19 @@ func (h *UserHandler) UserUpdateProfile(context *gin.Context) {
 		util.HttpResponse(context, 500, err.Error(), nil)
 		return
 	}
-	util.HttpResponse(context, 200, "ok", nil)
+	util.HttpResponse(context, 200, "ok", "ok")
 }
 
+// user reset password
+// @Summary user reset password
+// @Schemes http https
+// @Description user reset password
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param body body dto.UserResetPwdRequest true "请求body"
+// @Success 200 {string} ok
+// @Router /user/resetPwd [post]
 func (h *UserHandler) UserResetPwd(context *gin.Context) {
 	var req dto.UserResetPwdRequest
 	if err := util.CheckReqBindJson(context, &req); err != nil {
@@ -191,17 +283,17 @@ func (h *UserHandler) UserResetPwd(context *gin.Context) {
 		util.HttpResponse(context, 500, err.Error(), nil)
 		return
 	}
-	util.HttpResponse(context, 200, "ok", nil)
+	util.HttpResponse(context, 200, "ok", "ok")
 }
 
-// upload single file
-// @Summary upload single file
-// @Schemes
-// @Description upload single file
-// @Tags UploadHandler
-// @Accept json
+// upload  file
+// @Summary upload  file
+// @Schemes http https
+// @Description upload  file
+// @Tags User
+// @Accept multipart/form-data
 // @Produce json
-// @Param body body dto.UserNormalFileUploadRequest true "请求body"
+// @Param file formData file true "文件"
 // @Success 200 {object} dto.UserNormalFileUploadResponse
 // @Router /user/upload [post]
 func (h *UserHandler) UserUpload(context *gin.Context) {
@@ -219,6 +311,16 @@ func (h *UserHandler) UserUpload(context *gin.Context) {
 	return
 }
 
+// upload  avatar
+// @Summary upload  avatar
+// @Schemes http https
+// @Description upload  avatar
+// @Tags User
+// @Accept multipart/form-data
+// @Produce json
+// @Param file formData file true "文件"
+// @Success 200 {object} dto.UserNormalFileUploadResponse
+// @Router /user/uploadAvatar [post]
 func (h *UserHandler) UserUploadAvatar(context *gin.Context) {
 	file, err := util.HandleFileUpload(context, "image")
 	if err != nil {
@@ -234,15 +336,13 @@ func (h *UserHandler) UserUploadAvatar(context *gin.Context) {
 	return
 }
 
-// download single file
-// @Summary download single file
-// @Schemes
-// @Description download single file
-// @Tags UploadHandler
-// @Accept json
-// @Produce json
-// @Param body body dto.UserNormalFileDownloadRequest true "下载文件ID"
-// @Success 200 {object} dto.UserNormalFileDownloadRequest
+// download  file
+// @Summary download  file
+// @Schemes http https
+// @Description download  file
+// @Tags User
+// @Param id query uint true "下载文件ID"
+// @Success 200 {object} gin.Context
 // @Router /user/download [get]
 func (h *UserHandler) UserDownload(context *gin.Context) {
 	var req dto.UserNormalFileDownloadRequest
@@ -272,6 +372,16 @@ func (h *UserHandler) UserDownload(context *gin.Context) {
 	io.Copy(context.Writer, f)
 }
 
+// user large file chunk upload init
+// @Summary user large file chunk upload init
+// @Schemes http https
+// @Description user large file chunk upload init
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param body body dto.UserLargeFileUploadInitRequest true "请求body"
+// @Success 200 {object} dto.UserLargeFileUploadInitResponse
+// @Router /user/chunkInit [post]
 func (h *UserHandler) UserChunkInit(context *gin.Context) {
 	var req dto.UserLargeFileUploadInitRequest
 	if err := util.CheckReqBind(context, &req); err != nil {
@@ -288,6 +398,20 @@ func (h *UserHandler) UserChunkInit(context *gin.Context) {
 
 var counter int64
 
+// user large file chunk upload
+// @Summary user large file chunk upload
+// @Schemes http https
+// @Description user large file chunk upload
+// @Tags User
+// @Accept application/x-www-form-urlencoded
+// @Produce json
+// @Param upload_id header string true "upload_id"
+// @Param chunk_index header int true "chunk_index"
+// @Param chunk_md5 header string true "chunk_md5"
+// @Param total_chunks header int true "total_chunks"
+// @Param body body byte true "文件分块二进制内容"
+// @Success 200 {object} dto.UserLargeFileUploadResponse
+// @Router /user/chunkUpload [post]
 func (h *UserHandler) UserChunkUploadList(context *gin.Context) {
 	util.InitUpload(context)
 	count := atomic.LoadInt64(&counter)
@@ -317,6 +441,15 @@ func (h *UserHandler) UserChunkUploadList(context *gin.Context) {
 	util.HttpResponse(context, 200, "ok", response)
 }
 
+// user large file chunk upload query
+// @Summary user large file chunk upload query
+// @Schemes http https
+// @Description user large file chunk upload query
+// @Tags User
+// @Produce json
+// @Param upload_id query string true "upload_id"
+// @Success 200 {object} dto.UserLargeFileUploadResponse
+// @Router /user/chunkUploadQuery [get]
 func (h *UserHandler) UserChunkUploadQuery(context *gin.Context) {
 	var req dto.UserChunkUploadIdRequest
 	if err := util.CheckReqBindQuery(context, &req); err != nil {
@@ -332,6 +465,16 @@ func (h *UserHandler) UserChunkUploadQuery(context *gin.Context) {
 	util.HttpResponse(context, 200, "ok", response)
 }
 
+// user large file chunk merge
+// @Summary user large file chunk merge
+// @Schemes http https
+// @Description user large file chunk merge
+// @Tags User
+// @Accept json
+// @Param body body dto.UserChunkUploadIdRequest true "请求body"
+// @Produce json
+// @Success 200 {string} ok
+// @Router /user/chunkMerge [post]
 func (h *UserHandler) UserChunkMerge(context *gin.Context) {
 	var req dto.UserChunkUploadIdRequest
 	if err := util.CheckReqBind(context, &req); err != nil {
@@ -343,9 +486,17 @@ func (h *UserHandler) UserChunkMerge(context *gin.Context) {
 		util.HttpResponse(context, 500, err.Error(), nil)
 		return
 	}
-	util.HttpResponse(context, 200, "ok", "请求成功,文件正在合并中...")
+	util.HttpResponse(context, 200, "ok", "ok")
 }
 
+// user large file download
+// @Summary user large file download
+// @Schemes http https
+// @Description user large file download
+// @Tags User
+// @Param id query uint true "下载文件ID"
+// @Success 200 {object} gin.Context
+// @Router /user/chunkDownload [get]
 func (h *UserHandler) UserChunkDownload(context *gin.Context) {
 	var req dto.UserNormalFileDownloadRequest
 	if err := util.CheckReqBindQuery(context, &req); err != nil {

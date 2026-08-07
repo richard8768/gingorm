@@ -19,7 +19,7 @@ type UserNormalFileDownloadRequest struct {
 	ID uint `form:"id"    binding:"required,number,gt=0"`
 }
 type UserAddressUploadRequest struct {
-	File *multipart.FileHeader `form:"file" binding:"required" fileSize:"5" fileSuffix:"xlsx" msg:"请上传5M大小内的文件"`
+	File *multipart.FileHeader `form:"file" binding:"required" fileSize:"4" fileSuffix:"xlsx" msg:"请上传4M大小内的文件"`
 }
 
 type UserLargeFileUploadInitRequest struct {

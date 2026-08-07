@@ -14,10 +14,8 @@ import (
 
 // HelloWorld test
 // @Summary HelloWorld
-// @Schemes
+// @Schemes http https
 // @Description HelloWorld
-// @Tags HelloWorldHandler
-// @Accept json
 // @Produce json
 // @Success 200 {string} hello world!
 // @Router / [get]
