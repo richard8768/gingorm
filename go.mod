@@ -1,6 +1,6 @@
 module gin_demo
 
-go 1.25.7
+go 1.26.8
 
 require (
 	github.com/aliyun/alibabacloud-oss-go-sdk-v2 v1.4.0
